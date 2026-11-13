@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Cloudy English: plan personalizable de inglés técnico para ingeniería electrónica y de software, con tutor, voz, racha, calendario y lecciones gamificadas.">
+<meta name="theme-color" content="#ffb6c1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%B8%3C/text%3E%3C/svg%3E">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.js"></script>
+<title>Cloudy English</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff5f8;--card:#fff;--ink:#4a3a4f;--mut:#8b7a90;--p1:#ffd1dc;--p2:#ffb6c1;--lav:#e6dcff;--coral:#ff7f7f;--cd:#e05f6f;--ld:#c9b8f0;--sh:0 6px 20px rgba(255,150,180,.28);box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+:root[data-th="lav"]{--bg:#f6f2ff;--ink:#40355c;--mut:#857aa3;--p1:#e6dcff;--p2:#cdb8ff;--lav:#ffd9ec;--coral:#9b7bea;--cd:#7a5bc8;--ld:#e8bfd6;--sh:0 6px 20px rgba(155,123,234,.25)}
+:root[data-th="menta"]{--bg:#f0fbf6;--ink:#2f4a3f;--mut:#6f8f81;--p1:#cdf2e0;--p2:#9be0c1;--lav:#e0f4ff;--coral:#2fae7c;--cd:#1f8a60;--ld:#b9dcef;--sh:0 6px 20px rgba(63,191,138,.25)}
+:root[data-th="cielo"]{--bg:#eff8ff;--ink:#2f4560;--mut:#6f87a3;--p1:#cfe8ff;--p2:#9ccdf5;--lav:#e6e0ff;--coral:#3d9bf0;--cd:#2a7ac8;--ld:#cfc6f0;--sh:0 6px 20px rgba(61,155,240,.25)}
+:root[data-th="blanco"]{--bg:#fff;--card:#fafafa;--ink:#222;--mut:#777;--p1:#eee;--p2:#ddd;--lav:#f0f0f0;--coral:#333;--cd:#000;--ld:#bbb;--sh:0 4px 14px rgba(0,0,0,.12)}
+:root[data-th="goth"]{color-scheme:dark;--bg:#17121c;--card:#241b2c;--ink:#f1e6f5;--mut:#b09bb8;--p1:#3a2a45;--p2:#5b3a6b;--lav:#2f2340;--coral:#c2185b;--cd:#8a0f40;--ld:#1a1224;--sh:0 6px 20px rgba(0,0,0,.55)}
+select,textarea,input[type=text]{font:inherit;padding:10px;border-radius:.8rem;border:2px solid var(--p1);background:var(--card);color:var(--ink);max-width:100%}
+.sw{width:30px;height:30px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px #0003;margin:2px;cursor:pointer;vertical-align:middle}.sw.on{outline:3px solid var(--coral)}
+nav button:disabled,.btn:disabled,.chip:disabled{opacity:.4;cursor:not-allowed}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito","Segoe UI",system-ui,sans-serif;min-height:100vh}
+.wrap{max-width:780px;margin:0 auto;padding:14px}
+h1{margin:0;font-size:1.5rem}h2{margin:.2rem 0 .6rem;font-size:1.15rem}
+.card{background:var(--card);border-radius:1.25rem;box-shadow:var(--sh);padding:16px;margin-bottom:14px;animation:pop .35s ease}
+.top{background:linear-gradient(135deg,var(--p1),var(--lav));border-radius:1.5rem;padding:16px;margin-bottom:14px;box-shadow:var(--sh)}
+.stats{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.stat{background:var(--card);border-radius:999px;padding:6px 12px;font-weight:800;font-size:.9rem}
+.bar{height:12px;background:var(--p1);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--p2),var(--coral));border-radius:99px;transition:width .7s cubic-bezier(.2,.9,.3,1)}
+nav{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto}
+nav button,.btn,.chip,.opt{font:inherit;font-weight:800;border:0;cursor:pointer;color:var(--ink)}
+nav button{flex:1;min-width:84px;padding:10px;border-radius:999px;background:var(--card);box-shadow:var(--sh)}
+nav button.on{background:var(--coral);color:#fff}
+.btn{background:var(--coral);color:#fff;padding:12px 18px;border-radius:999px;box-shadow:0 4px 0 var(--cd);width:100%;font-size:1rem}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--cd)}.btn:disabled{opacity:.5}
+.btn.alt{background:var(--lav);color:var(--ink);box-shadow:0 4px 0 var(--ld)}
+.chip{background:var(--p1);border-radius:999px;padding:8px 14px;margin:3px}
+.chip.on{background:var(--coral);color:#fff}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:9px 12px;border-radius:1rem;background:var(--bg);margin:6px 0}
+.tag{display:inline-block;background:var(--lav);border-radius:99px;padding:3px 10px;font-size:.8rem;font-weight:800}
+a{color:var(--coral);font-weight:800}
+.mut{color:var(--mut);font-size:.9rem}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--p1);border-radius:1rem;padding:12px 14px;margin:8px 0;font-size:1rem}
+.opt:hover{border-color:var(--p2)}.opt.ok{background:#d6f5e3;border-color:var(--ok);color:#24513a}.opt.bad{background:#ffe0e0;border-color:var(--coral);color:#7a2b2b;animation:shake .3s}.opt.sel{border-color:var(--coral);background:var(--p1)}
+.opt.done{opacity:.4;pointer-events:none}
+pre{background:var(--bg);border-radius:1rem;padding:12px;white-space:pre-wrap;font-size:.95rem}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center}
+.cal b{font-size:.8rem;color:var(--mut)}
+.d{aspect-ratio:1;border:0;border-radius:.9rem;background:var(--bg);font:inherit;font-weight:800;color:var(--ink);cursor:pointer}
+.d.off{opacity:.25;pointer-events:none}.d.p{background:var(--p1)}.d.f{background:var(--p2);color:#fff}
+.d.t{outline:3px solid var(--coral)}.d.s{box-shadow:0 0 0 3px var(--lav)}
+.fc{min-height:140px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:1.4rem;font-weight:800;background:linear-gradient(135deg,var(--lav),var(--p1));border-radius:1.25rem;padding:20px;cursor:pointer}
+.fl{position:fixed;font-size:1.6rem;pointer-events:none;animation:fly 1s ease-out forwards;z-index:99}
+input[type=number]{font:inherit;padding:10px;border-radius:.8rem;border:2px solid var(--p1);width:110px;background:var(--card);color:var(--ink)}
+.node{width:104px;height:104px;border-radius:50%;border:0;font:inherit;font-weight:800;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--coral);color:#fff;box-shadow:0 6px 0 var(--cd);cursor:pointer}.node.done{background:var(--p2);color:var(--ink);box-shadow:0 6px 0 var(--ld)}.node.lock{background:var(--p1);color:var(--mut);box-shadow:none;cursor:not-allowed}.node span{font-size:.75rem;font-weight:700}
+@keyframes pop{from{transform:scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+@keyframes fly{to{transform:translate(var(--x),-180px) rotate(40deg);opacity:0}}
+</style></head><body><noscript><p style="padding:20px">Activa JavaScript para usar Cloudy English 🌸</p></noscript><div class="wrap">
+<div class="top"><h1>🌸 Cloudy English</h1><div class="mut" id="hi"></div>
+<div class="stats" id="st"></div><div id="sw" style="margin-top:10px"></div><div class="bar" style="margin-top:10px"><i id="pb" style="width:0"></i></div><div class="mut" id="pt" style="margin-top:4px"></div></div>
+<nav id="nv"></nav><div id="v"></div></div>
+<script>
+const $=s=>document.querySelector(s);
+let START=new Date(2026,10,13),END,TOTAL;
+const MN=["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+const key=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+const day0=d=>new Date(d.getFullYear(),d.getMonth(),d.getDate());
+const dn=d=>Math.round((day0(d)-START)/864e5);
+const DEF=()=>({log:{},xp:0,plan:{},th:null,goal:{f:"B1",t:"C1",h:3,pat:false},auto:false,field:null,ob:false,hearts:6});
+const sysTh=()=>matchMedia("(prefers-color-scheme: dark)").matches?"goth":"rosa";
+let S=DEF(),USER=null,LOAD=false;const save=()=>persist();
+const LV=["A1","A2","B1","B2","C1","C2"],HR=[100,150,200,220,250];let CALC;
+function calc(){const g=S.goal,a=LV.indexOf(g.f),b=LV.indexOf(g.t),ok=b>a,hrs=ok?HR.slice(a,b).reduce((x,y)=>x+y,0):0,h=g.pat?4.36:g.h,mo=ok&&h>0?hrs/(h*30):0,days=ok?Math.max(7,Math.ceil(mo*30)):30;TOTAL=days;END=new Date(START.getFullYear(),START.getMonth(),START.getDate()+days-1);CALC={ok,hrs,h,mo}}
+function hydrate(d){S=Object.assign(DEF(),d||{});if(!S.th)S.th=sysTh();if(d&&d.ob===undefined&&Object.keys(S.log).length)S.ob=true;START=S.start?new Date(...S.start.split("-").map((x,i)=>i==1?x-1:+x)):day0(new Date());refill();loadAI();applyField();calc();sel=day0(new Date());if(dn(sel)<0)sel=new Date(START);if(sel>END)sel=new Date(END);tab="hoy";L=null;TS=null;calM=0;CH.m=CH.m.slice(0,1);CH.q=null}
+START=day0(new Date());calc();
+let MONTHS=[
+{n:"Hardware y circuitos",e:"🔌",t:["Resistors, capacitors & LEDs|Resistencias, condensadores y LED","Voltage, current & Ohm’s law|Voltaje, corriente y ley de Ohm","Reading a datasheet|Leer una hoja de datos","Microcontrollers & Arduino|Microcontroladores y Arduino","Soldering & breadboards|Soldadura y protoboards","Sensors & actuators|Sensores y actuadores","Debugging hardware|Depurar hardware","Explaining a schematic|Explicar un esquema"],c:["Describe en voz alta un circuito LED con 5 frases","Traduce 10 términos de una datasheet","Graba 1 min explicando Ohm a un compañero","Escribe 5 líneas de comentarios en inglés para un sketch de Arduino"]},
+{n:"Código y software",e:"💻",t:["Variables, loops & functions|Variables, ciclos y funciones","Reading code aloud|Leer código en voz alta","Git & pull requests|Git y pull requests","Data structures|Estructuras de datos","OOP vocabulary|Vocabulario POO","Bugs & error messages|Bugs y mensajes de error","APIs & databases|APIs y bases de datos","Code review comments|Comentarios de code review"],c:["Comenta en inglés una función tuya de Java","Escribe un commit message claro y un PR description","Explica HashMap vs ArrayList en 6 frases","Traduce un error de consola y explica su causa"]},
+{n:"Linux y terminal",e:"🐧",t:["Files & directories|Archivos y directorios","Permissions & users|Permisos y usuarios","Pipes & redirection|Pipes y redirección","Processes & services|Procesos y servicios","Package managers|Gestores de paquetes","Shell scripting|Scripts de shell","Networking commands|Comandos de red","Reading man pages|Leer páginas man"],c:["Narra en inglés 5 comandos mientras los ejecutas","Lee una página man y resume 3 flags","Escribe un script de 5 líneas con comentarios en inglés","Explica chmod 755 como si fuera un tutorial"]},
+{n:"Comunicación profesional",e:"🗣️",t:["Daily stand-ups|Reuniones diarias","Writing technical emails|Correos técnicos","Documentation & READMEs|Documentación y README","Presenting a project|Presentar un proyecto","Giving & taking feedback|Dar y recibir feedback","Meetings & negotiation|Reuniones y negociación","Reporting incidents|Reportar incidentes","Explaining to non-experts|Explicar a no expertos"],c:["Haz un stand-up de 30 s: yesterday, today, blockers","Redacta un correo pidiendo ayuda con un bug","Escribe el README de uno de tus proyectos","Presenta tu proyecto en 2 minutos grabándote"]},
+{n:"Maestría C1 y entrevistas",e:"🎓",t:["Technical interview questions|Preguntas técnicas de entrevista","Behavioural answers (STAR)|Respuestas conductuales (STAR)","Advanced linkers & hedging|Conectores avanzados","Phrasal verbs for tech|Phrasal verbs técnicos","Writing a CV & LinkedIn|CV y LinkedIn","Podcasts & talks listening|Escucha de charlas","Essay on a tech trend|Ensayo sobre tendencias","Mock interview|Entrevista simulada"],c:["Responde 3 preguntas de entrevista grabándote","Escribe 150 palabras sobre IA en electrónica","Actualiza tu perfil de LinkedIn en inglés","Resume una charla técnica de 10 min"]}];
+const defH=d=>{if(!S.goal.pat)return S.goal.h;const w=d.getDay();return w==0?6:w==6?2:4.5};
+const yt=q=>"https://www.youtube.com/results?search_query="+encodeURIComponent(q);
+let tab="hoy",sel=day0(new Date()),calM=0,L=null;
+if(dn(sel)<0)sel=new Date(START);
+if(sel>END)sel=new Date(END);
+function streak(){let d=day0(new Date()),c=0;if(!S.log[key(d)])d.setDate(d.getDate()-1);while(S.log[key(d)]){c++;d.setDate(d.getDate()-1)}return c}
+function burst(){const em=["🌸","💖","✨","🎀","⭐"];for(let i=0;i<9;i++){const s=document.createElement("span");s.className="fl";s.textContent=em[i%5];s.style.left=(30+Math.random()*40)+"vw";s.style.top="55vh";s.style.setProperty("--x",(Math.random()*160-80)+"px");document.body.appendChild(s);setTimeout(()=>s.remove(),1000)}}
+function hoy(){
+ const k=key(sel),n=Math.max(0,dn(sel)),mi=Math.min(4,Math.floor(n/TOTAL*5)),m=MONTHS[mi];
+ const [a,ae]=m.t[(n*2)%m.t.length].split("|"),[b,be]=m.t[(n*2+1)%m.t.length].split("|");
+ const h=S.plan[k]??defH(sel),mins=Math.round(h*60),lg=S.log[k],fut=day0(sel)>day0(new Date());
+ const A=Math.round(mins*.4),B=Math.round(mins*.3),P=Math.round(mins*.15),R=mins-A-B-P;
+ const lab=sel.toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long"});
+ return `<div class="card"><span class="tag">${m.e} Módulo ${mi+1} de 5: ${m.n}</span><h2 style="text-transform:capitalize;margin-top:8px">${lab} · Día ${n+1} de ${TOTAL}</h2>
+ <div class="mut">¿Cuánto tiempo le dedicarás hoy?</div>
+ <div>${[1,2,3,4.5,6].map(x=>`<button class="chip ${x==h?"on":""}" onclick="setH(${x})">${x} h</button>`).join("")}
+ <input type="number" min="0.5" max="12" step="0.5" placeholder="otro" onchange="setH(+this.value)"></div>
+ <div class="mut" style="margin-top:6px">Tu meta diaria: ${fh(CALC.h)} · cámbiala en ⚙️ Meta</div></div>
+ <div class="card"><h2>🎯 Hoy debo saber… <span class="tag">${lvTag(n)}</span></h2><p style="margin:0">Explicar <b>${a}</b> (${ae}) y usar el vocabulario de <b>${b}</b> en al menos 3 frases propias.<br><span class="mut">${lvFocus(n)}</span></p><div style="margin-top:8px"><button class="chip" data-s="${q("Today I need to explain "+a+" and use the vocabulary of "+b+" in three sentences of my own.")}" onclick="say(this.dataset.s)">🔊 Escuchar</button><button class="chip" onclick="askTopic()">🤖 Que el tutor me explique</button></div></div>
+ <div class="card"><h2>📅 Tu tarjeta del día (${h} h)</h2>
+ <div class="row"><span>📘 <b>Lección A:</b> ${a}<br><span class="mut">${ae}</span></span><span class="tag">${A} min</span></div>
+ <div class="row"><span>📗 <b>Lección B:</b> ${b}<br><span class="mut">${be}</span></span><span class="tag">${B} min</span></div>
+ <div class="row"><span>▶️ <b>Video:</b> <a target="_blank" rel="noopener" href="${yt(a.split("&")[0]+" English for engineers")}">buscar en YouTube</a></span><span class="tag">incluido</span></div>
+ <div class="row"><span>🎧 <b>Práctica:</b> shadowing + tarjetas Anki de “${b}”</span><span class="tag">${P} min</span></div>
+ <div class="row"><span>🛠️ <b>Reto técnico:</b> ${m.c[n%m.c.length]}</span><span class="tag">${R} min</span></div>
+ <button class="btn alt" style="margin-top:10px" onclick="startL()">🎮 Hacer la lección interactiva</button></div>
+ <div class="card"><h2>✅ Registrar mi sesión de hoy</h2>
+ <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><label>Minutos dedicados <input id="rm" type="number" min="0" max="720" value="${lg?lg.min:mins}"></label>
+ <label><input id="rg" type="checkbox" ${lg&&lg.g?"checked":""}> Cumplí mi meta de hoy</label></div>
+ <button class="btn" style="margin-top:12px" ${fut?"disabled":""} onclick="reg()">${lg?"Actualizar registro 💾":"Registrar mi sesión de hoy 🌸"}</button>
+ ${fut?'<div class="mut">Solo puedes registrar días que ya llegaron.</div>':lg?`<div class="mut" style="margin-top:6px">Registrado: ${lg.min} min · +${lg.xp} XP</div>`:""}</div>`}
+function setH(x){if(!x||x<=0)return;S.plan[key(sel)]=x;save();R()}
+function reg(){const min=Math.max(0,+$("#rm").value||0),g=$("#rg").checked,k=key(sel),pr=S.log[k];if(pr)S.xp-=pr.xp||0;const xp=Math.round(min/6)+(g?30:0);S.log[k]={min,g,xp};S.xp+=xp;save();burst();R()}
+function cal(){
+ const f=new Date(START.getFullYear(),START.getMonth()+calM,1),off=(f.getDay()+6)%7,nd=new Date(f.getFullYear(),f.getMonth()+1,0).getDate();
+ let c="";for(let i=0;i<off;i++)c+="<span></span>";
+ for(let d=1;d<=nd;d++){const x=new Date(f.getFullYear(),f.getMonth(),d),k=key(x),n=dn(x),inr=n>=0&&x<=END,l=S.log[k];
+  c+=`<button class="d ${inr?"":"off"} ${l?(l.g?"f":"p"):""} ${k==key(new Date())?"t":""} ${k==key(sel)?"s":""}" onclick="pick('${k}')">${l&&l.g?"✓":d}</button>`}
+ const done=Object.keys(S.log).length,goals=Object.values(S.log).filter(l=>l.g).length;
+ return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center"><button class="chip" ${calM<=0?"disabled":""} onclick="calM--;R()">‹</button><h2 style="text-transform:capitalize">${MN[f.getMonth()]} ${f.getFullYear()}</h2><button class="chip" ${calM>=maxM()?"disabled":""} onclick="calM++;R()">›</button></div>
+ <div class="cal">${["L","M","X","J","V","S","D"].map(x=>`<b>${x}</b>`).join("")}${c}</div>
+ <p class="mut">✓ meta cumplida · rosa claro = sesión sin meta · toca un día para ver su tarjeta.<br>Días registrados: <b>${done}</b> · Metas cumplidas: <b>${goals}</b></p></div>`}
+function pick(k){const [y,m,d]=k.split("-").map(Number);sel=new Date(y,m-1,d);tab="hoy";R()}
+function plan(){return MONTHS.map((m,i)=>{const lo=Math.ceil(i*TOTAL/5),hi=Math.ceil((i+1)*TOTAL/5)-1;const c=Object.keys(S.log).filter(k=>{const [y,mm,d]=k.split("-").map(Number),n=dn(new Date(y,mm-1,d));return n>=lo&&n<=hi}).length,tot=hi-lo+1;
+ return `<div class="card"><h2>${m.e} Módulo ${i+1}: ${m.n}</h2><div class="bar"><i style="width:${Math.round(c/tot*100)}%"></i></div><div class="mut">${c} de ${tot} días registrados</div>
+ <div style="margin-top:6px">${m.t.map(t=>`<span class="tag" style="margin:2px">${t.split("|")[0]}</span>`).join("")}</div></div>`}).join("")}
+/* ===== Lección interactiva ===== */
+let EX=[
+{t:"mc",q:"What does a resistor do in a circuit?",o:["It limits the flow of current","It stores source code","It amplifies radio waves","It compiles the firmware"],a:0,x:"Un resistor limita la corriente: “It limits the flow of current.”"},
+{t:"match",q:"Empareja el vocabulario técnico",p:[["Resistor","Resistencia"],["Capacitor","Condensador"],["Breadboard","Protoboard"],["Soldering iron","Soldador"]],ord:[2,0,3,1]},
+{t:"mc",q:"Choose the correct sentence.",o:["The current flow through the wire.","The current flows through the wire.","The current are flowing through wire.","Current the flows through wire."],a:1,x:"Sujeto singular (current) → verbo con -s: flows."},
+{t:"fill",q:"The LED won’t light up because its ____ is reversed.",o:["polarity","compiler","bandwidth"],a:0,x:"Los LED tienen polaridad (ánodo y cátodo)."},
+{t:"fill",code:1,q:"// Arduino: turn pin 13 on\ndigitalWrite(13, ____);",o:["HIGH","LOW","INPUT"],a:0,x:"HIGH envía 5 V al pin y enciende el LED."},
+{t:"speak",q:"Pronunciation",s:"The current flows through the resistor.",a:0},
+{t:"cards",q:"Repaso rápido estilo Anki",c:[["voltage drop","caída de tensión"],["short circuit","cortocircuito"],["pull-up resistor","resistencia pull-up"],["to debug","depurar"],["firmware","software embebido del dispositivo"]]}];
+function startL(){refill();L={i:0,h:S.hearts,ok:0,xp:0,ans:null,m:[],s:null,ci:0,fl:false,miss:[],pun:null,tr:""};tab="leccion";R()}
+function nxt(){L.i++;L.ans=null;L.m=[];L.s=null;L.ci=0;L.fl=false;R()}
+function ans(j){if(L.ans!=null)return;const e=EX[L.i];L.ans=j;if(j==e.a){L.ok++;L.xp+=10;burst()}else{L.h--;lose();L.miss.push(e.k||"circuit")}if(S.auto&&e.x)say(e.x,"es-ES");R()}
+function mL(i){L.s=i;R()}
+function mR(r){if(L.s==null)return;if(r==L.s){L.m.push(r);L.xp+=5;L.s=null;burst()}else{L.h--;lose();L.miss.push(EX[L.i].k);L.s=null}R()}
+function rate(){L.xp+=2;if(L.ci+1>=EX[L.i].c.length){L.ci=99}else{L.ci++;L.fl=false}R()}
+function fin(){S.xp+=L.xp;save();L=null;tab="hoy";R()}
+function lesson(){
+ if(!L)return `<div class="card"><h2>🎮 Lección de ejemplo</h2><p>${FIELDS[S.field].ln}: opción múltiple, emparejar, completar código, pronunciación con micrófono y tarjetas Anki. Tienes <b>${S.hearts} de 6 vidas</b> (se guardan en tu cuenta); si llegas a 0, te espera un reto de castigo 😈.</p><button class="btn" onclick="startL()">¡Empezar! 🌸</button></div>`;
+ const hd=`<div class="card"><div style="display:flex;gap:10px;align-items:center"><div class="bar" style="flex:1"><i style="width:${Math.round(L.i/EX.length*100)}%"></i></div><b>${hearts()}</b></div></div>`;
+ if(L.h<=0){if(!L.pun)initPun();return hd+punish()}
+ if(L.i>=EX.length)return hd+`<div class="card" style="text-align:center"><div style="font-size:3rem">🎉</div><h2>¡Lección completada!</h2><p>Ganaste <b>${L.xp} XP</b> · ${L.ok} respuestas correctas</p><button class="btn" onclick="fin()">Guardar XP 💖</button></div>`;
+ const e=EX[L.i];let b="";
+ if(e.t=="mc"||e.t=="fill"){
+  b=`<h2>${e.t=="fill"?"Completa:":"Elige:"} <button class="chip" data-s="${q(tts(e.q))}" onclick="say(this.dataset.s)">🔊</button></h2>${e.code?`<pre>${e.q}</pre>`:`<p style="font-size:1.1rem;font-weight:800">${e.q}</p>`}`+
+  e.o.map((o,j)=>`<button class="opt ${L.ans!=null?(j==e.a?"ok":j==L.ans?"bad":""):""}" onclick="ans(${j})">${o}</button>`).join("")+
+  (L.ans!=null?`<div class="row"><span>${L.ans==e.a?"✨ ¡Correcto!":"😿 Casi."} ${e.x}</span><button class="chip" data-s="${q(e.x)}" onclick="say(this.dataset.s,'es-ES')">🔊</button></div><button class="btn" onclick="nxt()">Continuar</button>`:"")}
+ else if(e.t=="speak"){b=`<h2>🎤 Pronunciación</h2><p>Escucha (toca la tarjeta) y repite la frase:</p><div class="fc" data-s="${q(e.s)}" onclick="say(this.dataset.s)">🔊 ${e.s}</div>`+(L.ans==null?`<button class="btn" style="margin-top:10px" onclick="${SR?"spk()":"nxt()"}">${SR?"🎤 Hablar":"Tu navegador no tiene micrófono: continuar"}</button>`:`<div class="row"><span>${L.ans==0?"✨ ¡Buena pronunciación!":"😿 Casi."} Escuché: “${q(L.tr)}”</span></div><button class="btn" onclick="nxt()">Continuar</button>`)}
+ else if(e.t=="match"){const all=L.m.length==e.p.length;
+  b=`<h2>${e.q}</h2><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><div>${e.p.map((p,i)=>`<button class="opt ${L.m.includes(i)?"ok done":L.s==i?"sel":""}" onclick="mL(${i})">${p[0]}</button>`).join("")}</div>
+  <div>${e.ord.map(r=>`<button class="opt ${L.m.includes(r)?"ok done":""}" onclick="mR(${r})">${e.p[r][1]}</button>`).join("")}</div></div>${all?'<button class="btn" onclick="nxt()">Continuar</button>':""}`}
+ else{const done=L.ci>=e.c.length,c=e.c[Math.min(L.ci,e.c.length-1)];
+  b=`<h2>${e.q}</h2>`+(done?`<p>¡Mazo completo! 🧠</p><button class="btn" onclick="nxt()">Continuar</button>`:
+  `<div class="mut">Tarjeta ${L.ci+1} de ${e.c.length} · toca para voltear</div><div class="fc" onclick="flip()">${L.fl?c[1]:c[0]}</div>`+
+  (L.fl?`<div style="display:flex;gap:8px;margin-top:10px"><button class="btn alt" onclick="rate()">Otra vez 😵</button><button class="btn alt" onclick="rate()">Bien 🙂</button><button class="btn alt" onclick="rate()">Fácil 😎</button></div>`:""))}
+ return hd+`<div class="card">${b}</div>`}
+/* ===== Voz, tutor, castigo, metas, temas ===== */
+EX.forEach((e,i)=>e.k=["resistor","breadboard","current flows","polarity","HIGH","resistor","resistor"][i]);
+let ANKI=EX.find(e=>e.t=="cards").c;
+const q=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+const tts=s=>s.replace(/\/\/[^\n]*\n?/g,"").replace(/_{2,}/g,"blank");
+const nw=s=>s.toLowerCase().replace(/[^a-z\s]/g,"").split(/\s+/).filter(Boolean);
+const sim=(a,b)=>{const A=nw(a),B=nw(b);return A.length?A.filter(w=>B.includes(w)).length/A.length:0};
+const syn=window.speechSynthesis,SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+function say(t,l){l=l||"en-US";if(!syn){alert("Tu navegador no soporta voz.");return}syn.cancel();const u=new SpeechSynthesisUtterance(t);u.lang=l;u.rate=.95;const vs=syn.getVoices(),v=vs.find(x=>x.lang.replace("_","-")==l)||vs.find(x=>x.lang.slice(0,2)==l.slice(0,2));if(v)u.voice=v;syn.speak(u)}
+function listen(cb){if(!SR){alert("Tu navegador no soporta reconocimiento de voz. Prueba Chrome, Edge o Safari.");return}const r=new SR();r.lang="en-US";r.onresult=e=>cb(e.results[0][0].transcript);r.onerror=()=>{alert("No pude escucharte. Revisa el permiso del micrófono.");cb(null)};r.onnomatch=()=>cb(null);r.start()}
+const HT={rosa:"❤️",lav:"💜",menta:"💚",cielo:"💙",blanco:"🤍",goth:"🖤"};
+const TH=[{k:"rosa",n:"Rosa pastel",c:"#ffb6c1"},{k:"lav",n:"Morado lavanda",c:"#cdb8ff"},{k:"menta",n:"Verde menta",c:"#9be0c1"},{k:"cielo",n:"Azul cielo",c:"#9ccdf5"},{k:"blanco",n:"Blanco minimalista",c:"#ffffff"},{k:"goth",n:"Negro gótico",c:"#241b2c"}];
+function setTh(k){S.th=k;save();R()}
+const hearts=()=>{const h=Math.max(L.h,0);return HT[S.th].repeat(h)+'<span style="opacity:.3">♡</span>'.repeat(6-h)};
+const maxM=()=>(END.getFullYear()-START.getFullYear())*12+END.getMonth()-START.getMonth();
+const fn=x=>String(+x.toFixed(2)).replace(".",",");
+const fh=h=>h<1?`${fn(h)} horas (${Math.round(h*60)} min)`:h==1?"1 hora":`${fn(h)} horas`;
+const fm=m=>m<1?`${Math.max(1,Math.round(m*4.3))} semanas`:`${fn(Math.round(m*10)/10)} meses`;
+function lvTag(n){const a=LV.indexOf(S.goal.f),b=LV.indexOf(S.goal.t);return b<=a?S.goal.f:"hacia "+LV[Math.min(b,a+1+Math.floor(n/TOTAL*(b-a)))]}
+function lvFocus(n){const l=lvTag(n).replace("hacia ","");return /A/.test(l)?"Enfoque: frases cortas y vocabulario base; repite cada término en voz alta.":/B/.test(l)?"Enfoque: explica con tus palabras y conecta ideas (because, however, so).":"Enfoque: argumenta con precisión, phrasal verbs y matices técnicos."}
+function spk(){const e=EX[L.i];listen(t=>{if(t==null)return;L.tr=t;ans(sim(e.s,t)>=.7?0:1)})}
+function flip(){L.fl=!L.fl;R();const c=EX[L.i].c[L.ci];if(c)say(L.fl?c[1]:c[0],L.fl?"es-ES":"en-US")}
+/* castigo */
+let SH=["The current flows through the resistor.","I need to debug the firmware before the demo.","The function returns a value to the main program."];
+function initPun(){const i=S.pc||0;S.pc=i+1;save();L.pun={ty:["write","shadow","anki"][i%3],ph:SH[i%3],k:L.miss[L.miss.length-1]||"circuit",t:15,txt:"",n:0,ci:0,fl:false,msg:""}}
+function endPun(){L.h=3;S.hearts=3;S.hAt=Date.now();save();L.pun=null;burst();R()}
+function pw(){const p=L.pun,ls=p.txt.split(/[.!?\n]+/).map(x=>x.trim()).filter(x=>x.split(/\s+/).length>=4);if(ls.length>=3&&p.txt.toLowerCase().includes(p.k.toLowerCase().split(" ")[0]))endPun();else{p.msg="Necesito 3 frases de al menos 4 palabras usando “"+p.k+"”.";R()}}
+function ps(){const p=L.pun;listen(t=>{if(t==null)return;if(sim(p.ph,t)>=.6){p.n++;p.msg=""}else p.msg="Escuché: “"+t+"”. ¡Inténtalo otra vez!";if(p.n>=3)endPun();else R()})}
+function ps2(){L.pun.n++;if(L.pun.n>=3)endPun();else R()}
+function pa(){const p=L.pun;if(p.t>0)return;if(!p.fl)p.fl=true;else{p.ci++;p.fl=false;if(p.ci>=ANKI.length)return endPun()}R()}
+setInterval(()=>{if(L&&L.pun&&L.pun.t>0){L.pun.t--;if(L.pun.t==0)R();else{const e=$("#tm");if(e)e.textContent=L.pun.t}}},1000);
+function punish(){const p=L.pun,dis=p.t>0?"disabled":"";let b;
+ if(p.ty=="write")b=`<p>✍️ Reto de castigo: escribe <b>3 frases técnicas</b> en inglés usando “${q(p.k)}”. Una por línea.</p><textarea rows="5" style="width:100%" oninput="L.pun.txt=this.value">${q(p.txt)}</textarea><button class="btn" style="margin-top:8px" ${dis} onclick="pw()">Enviar reto</button>`;
+ else if(p.ty=="shadow")b=`<p>🗣️ Reto de castigo: shadowing. Escucha y repite la frase 3 veces (${p.n}/3).</p><div class="fc" data-s="${q(p.ph)}" onclick="say(this.dataset.s)">🔊 ${p.ph}</div><div style="display:flex;gap:8px;margin-top:10px"><button class="btn alt" onclick="say(L.pun.ph)">Escuchar</button><button class="btn" ${dis} onclick="${SR?"ps()":"ps2()"}">${SR?"🎤 Repetir":"Ya la repetí en voz alta ✔"}</button></div>`;
+ else b=`<p>🃏 Reto de castigo: repasa ${ANKI.length} tarjetas (${Math.min(p.ci+1,ANKI.length)}/${ANKI.length}).</p><div class="fc" onclick="pa()">${ANKI[Math.min(p.ci,ANKI.length-1)][p.fl?1:0]}</div><button class="btn" style="margin-top:10px" ${dis} onclick="pa()">${p.fl?"Siguiente ➡️":"Voltear 🔄"}</button>`;
+ return `<div class="card" style="text-align:center"><div style="font-size:2.4rem">🔒💔</div><h2>¡Te quedaste sin vidas!</h2><div class="mut">La app está bloqueada hasta completar el reto. Podrás enviarlo en <b id="tm">${p.t}</b> s.</div></div><div class="card">${b}${p.msg?`<p style="color:var(--coral);font-weight:800">${q(p.msg)}</p>`:""}<div class="mut">Al terminar recuperas 3 vidas y sigues la lección.</div></div>`}
+/* tutor simulado */
+let KB=[[/resistor|ohm/,"A resistor limits the flow of current. Ohm’s law says voltage equals current times resistance.","Un resistor limita la corriente. Ley de Ohm: V = I × R."],
+[/capacitor/,"A capacitor stores electrical energy and smooths voltage changes.","Un condensador almacena energía y suaviza cambios de voltaje."],
+[/\bleds?\b|diode/,"An LED lights up only when current flows in the right direction, so polarity matters. Always use a resistor with it.","Un LED solo enciende con la polaridad correcta; úsalo con una resistencia."],
+[/datasheet|microcontroller|arduino|sensor|solder|breadboard|schematic/,"Read the datasheet first: it lists voltage limits, pinout and typical circuits. Prototype on a breadboard before soldering.","Lee primero la hoja de datos; prototipa en protoboard antes de soldar."],
+[/loop|function|variable|code/,"A loop repeats instructions, a function groups code that returns a value, and a variable stores data.","Un ciclo repite instrucciones, una función agrupa código y una variable guarda datos."],
+[/git|commit|pull request/,"Git tracks changes. You commit your work, push it to the remote, and open a pull request for review.","Git registra cambios: commit, push y pull request para revisión."],
+[/array|hashmap|list|data structure|class|object|oop/,"A data structure organizes data for efficient access, like an array or a HashMap. In OOP, a class is a blueprint and an object is an instance.","Una clase es el molde y un objeto es una instancia."],
+[/bug|debug|error|api|database|sql/,"To debug, reproduce the bug, read the error message, and isolate the cause. An API lets programs talk to each other.","Depurar: reproduce, lee el error y aísla la causa. Una API conecta programas."],
+[/linux|chmod|permission|pipe|shell|terminal|command|directory/,"In Linux, chmod changes permissions, and a pipe sends the output of one command into another.","chmod cambia permisos; un pipe envía la salida de un comando a otro."],
+[/stand-?up|meeting|email|feedback|present|interview|cv/,"Be clear and concise: say what you did yesterday, what you will do today, and any blockers.","Sé claro y breve: qué hiciste, qué harás y qué te bloquea."]];
+const TIPS=[[/i am agree/,"Say “I agree”, without “am”.","Se dice “I agree”."],[/more better/,"Say “better”, not “more better”.",""],[/\b(he|she|it) (have|go|do)\b/,"With he, she or it, use has, goes or does.",""]];
+let VOC=[["resistor","resistencia"],["capacitor","condensador"],["breadboard","protoboard"],["short circuit","cortocircuito"],["to debug","depurar"],["bug","error de código"],["loop","ciclo"],["permission","permiso"]];
+let CH={m:[{r:"b",en:"Hi! I’m your English tutor. Ask me about a term from your field, type “quiz me”, or tap the mic and talk to me.",es:"¡Hola! Pregúntame un término, escribe “quiz me” o usa el micrófono."}],q:null,inp:"",voice:false};
+function bot(t){const s=t.toLowerCase().trim();
+ if(CH.q){const r=CH.q,ok=s.includes(r[0].replace("to ",""));CH.q=null;if(ok){S.xp+=5;save();return{en:"Correct! “"+r[0]+"” means “"+r[1]+"”. +5 XP ✨",es:""}}return{en:"Not quite. The answer is “"+r[0]+"”. Say “quiz me” to try again.",es:""}}
+ if(/^(hi|hello|hola|hey)/.test(s))return{en:"Hello! Ask me about a technical term or say “quiz me”.",es:"¡Hola! Pregúntame un término técnico o escribe “quiz me”."};
+ if(/quiz/.test(s)){CH.q=VOC[Math.floor(Math.random()*VOC.length)];return{en:"How do you say “"+CH.q[1]+"” in English?",es:""}}
+ const tp=TIPS.find(x=>x[0].test(s));if(tp)return{en:tp[1],es:tp[2]};
+ const k=KB.find(x=>x[0].test(s));if(k)return{en:k[1],es:k[2]};
+ if(/^explain /.test(s))return{en:"Today’s topic is “"+t.slice(8)+"”. Say three sentences about it out loud, then type one and I’ll give you feedback.",es:"Di tres frases sobre el tema en voz alta y escribe una para recibir feedback."};
+ return{en:"Good effort! Try using a word from your field. Model: “"+FIELDS[S.field].fb+"”",es:"¡Buen intento! Usa un término de tu campo, como en el modelo."}}
+function send(t){t=(t===undefined?CH.inp:t).trim();if(!t||CH.busy)return;const sp=S.auto||CH.voice;CH.voice=false;CH.m.push({r:"u",en:t});CH.inp="";
+ const fin=r=>{CH.m.push({r:"b",en:r.en,es:r.es||""});CH.busy=false;R();if(sp)say(r.en.replace(/[*#`_]/g,""));const c=$("#ch");if(c)c.scrollTop=1e9;const i=$("#ci");if(i)i.focus()};
+ if(AI.p!="none"&&AI.k&&!CH.q){CH.busy=true;R();askAI(hist()).then(x=>fin({en:x})).catch(e=>fin({en:"⚠️ No pude conectar con la IA ("+e.message+"). Respondo en modo local: "+bot(t).en}))}else fin(bot(t))}
+function mic(){listen(t=>{if(t){CH.voice=true;send(t)}})}
+function askTopic(){const n=Math.max(0,dn(sel)),m=MONTHS[Math.min(4,Math.floor(n/TOTAL*5))];tab="tutor";send("explain "+m.t[(n*2)%m.t.length].split("|")[0])}
+function tutor(){return `<div class="card"><h2>🤖 Tutor de IA <span class="tag">${AI.p!="none"&&AI.k?"IA real":"modo local"}</span></h2><div class="mut">${AI.p!="none"&&AI.k?"Conectada a tu IA con tu propia clave.":"Modo local, sin IA en la nube. Añade tu clave en ⚙️ Meta para chatear con IA real."} Usa 🔊 para escuchar y 🎤 para hablar.</div>
+<div id="ch" style="max-height:52vh;overflow:auto;margin:10px 0">${CH.m.map(m=>`<div class="row" style="${m.r=="u"?"background:var(--p1);margin-left:18%":"margin-right:10%"}"><span>${m.r=="b"?"🤖":"🧑‍💻"} ${q(m.en).replace(/\n/g,"<br>")}${m.es?`<br><span class="mut">${q(m.es)}</span>`:""}</span>${m.r=="b"?`<button class="chip" data-s="${q(m.en)}" onclick="say(this.dataset.s)">🔊</button>`:""}</div>`).join("")}${CH.busy?'<div class="row"><span>🤖 …</span></div>':""}</div>
+<div style="display:flex;gap:6px"><input id="ci" type="text" style="flex:1;min-width:0" value="${q(CH.inp)}" oninput="CH.inp=this.value" onkeydown="if(event.key=='Enter')send()" placeholder="Escribe en inglés o español…"><button class="chip" onclick="mic()">🎤</button><button class="chip" onclick="send()">➤</button></div>
+<div style="margin-top:8px"><button class="chip" onclick="askTopic()">📘 Explícame la lección de hoy</button><button class="chip" onclick="send('quiz me')">🎯 Quiz me</button></div>
+<label class="mut"><input type="checkbox" ${S.auto?"checked":""} onchange="S.auto=this.checked;save()"> Leer en voz alta automáticamente</label></div>`}
+/* meta */
+function setHrs(v){S.goal.h=v;S.goal.pat=false;save();calc();R()}
+function setTxt(s){const m=s.toLowerCase().replace(",",".").match(/([\d.]+)\s*([a-z]*)/);if(!m)return;let v=+m[1];if(!v)return;if(/^m/.test(m[2])||(!m[2]&&v>12))v/=60;setHrs(Math.min(16,Math.max(.1,v)))}
+function setG(){S.goal.f=$("#gf").value;S.goal.t=$("#gt").value;save();calc();R()}
+function meta(){const g=S.goal,c=CALC,op=(v,a)=>a.map(x=>`<option ${x==v?"selected":""}>${x}</option>`).join("");
+ const msg=c.ok?`Con <b>${fh(c.h)}</b> al día, alcanzarás tu meta de <b>${g.t}</b> en aproximadamente <b>${fm(c.mo)}</b>.`:"Elige una meta superior a tu nivel actual.";
+ return `<div class="card" style="background:linear-gradient(135deg,var(--p1),var(--lav))"><h2>✨ Tu proyección</h2><p style="font-size:1.15rem;margin:0">${msg}</p>${c.ok?`<div class="mut" style="margin-top:6px">≈ ${c.hrs} h de estudio guiado en total · tu plan dura ${TOTAL} días (5 módulos de ≈${Math.round(TOTAL/5)} días). Las tarjetas diarias y su enfoque se ajustan a este ritmo y a tu nivel.</div>`:""}</div>
+<div class="card"><h2>🎯 Enfoque</h2><div>${Object.entries(FIELDS).map(([k,f])=>`<button class="chip ${S.field==k?"on":""}" onclick="setField('${k}')">${f.e} ${f.n}</button>`).join("")}</div><p class="mut">Cambia las tarjetas, el vocabulario y los retos. Tu progreso se conserva.</p></div>
+<div class="card"><h2>📝 Test de nivel</h2><p class="mut">Tu nivel actual: <b>${g.f}</b>. Puedes repetir el test o volver a empezar desde cero; tu plan se recalcula al instante.</p><button class="btn" onclick="startTest()">Repetir el test de nivel</button><div style="height:8px"></div><button class="btn alt" onclick="applyLevel('A1')">Empezar desde cero (A1)</button></div>
+<div class="card"><h2>🎚️ Nivel</h2><label>Mi nivel actual <select id="gf" onchange="setG()">${op(g.f,LV.slice(0,5))}</select></label> <label style="margin-left:8px">Quiero llegar a <select id="gt" onchange="setG()">${op(g.t,LV.slice(1))}</select></label></div>
+<div class="card"><h2>⏱️ Tiempo al día</h2><div>${[[.33,"20 min"],[1,"1 h"],[2,"2 h"],[3,"3 h"],[4.5,"4,5 h"],[8,"8 h"]].map(([x,t])=>`<button class="chip ${!g.pat&&Math.abs(g.h-x)<.01?"on":""}" onclick="setHrs(${x})">${t}</button>`).join("")}<button class="chip ${g.pat?"on":""}" onclick="S.goal.pat=true;save();calc();R()">Mi patrón: 4,5 · 2 · 6 h</button></div>
+<label class="mut">O escribe el tuyo (ej. “45 min”, “3 horas”) <input type="text" placeholder="ej. 90 min" onchange="setTxt(this.value)" style="width:140px"></label>
+<p class="mut">Estimación aproximada basada en las horas de estudio guiado que suelen recomendarse por nivel del MCER (A1→A2 ≈100 h, A2→B1 ≈150 h, B1→B2 ≈200 h, B2→C1 ≈220 h, C1→C2 ≈250 h). Tu ritmo real puede variar.</p></div>${aiCard()}`}
+/* ===== Onboarding, test de nivel e IA real ===== */
+const swHtml=()=>TH.map(t=>`<button class="sw ${S.th==t.k?"on":""}" style="background:${t.c}" title="${t.n}" aria-label="${t.n}" onclick="setTh('${t.k}')"></button>`).join("");
+function welcome(){return `<div class="card" style="text-align:center;padding:28px 18px;margin-top:20px;background:linear-gradient(160deg,var(--p1),var(--lav))"><div style="font-size:3.4rem">🌸</div><h1>Cloudy English</h1><p style="font-size:1.05rem">Inglés para tu carrera, a tu ritmo y con juegos. ¿Cómo quieres empezar?</p>
+<button class="btn" onclick="applyLevel('A1')">🌱 No sé nada / Empezar desde cero (Nivel A1)</button><div style="height:10px"></div><button class="btn alt" onclick="startTest()">📝 Hacer un Test de Nivel Rápido</button>
+<div class="mut" style="margin-top:14px">🎨 Tema ${swHtml()}</div><div class="mut" style="margin-top:6px">Tu progreso se guarda solo en este navegador.</div></div>`}
+const TQ=[{q:"I ____ a student.",o:["am","is","are","be"],a:0},
+{q:"Yesterday I ____ to work by bus.",o:["go","went","going","goes"],a:1},
+{q:"If it rains tomorrow, we ____ at home.",o:["will stay","stayed","staying","would stayed"],a:0},
+{q:"By the time the manager arrived, we ____ the report.",o:["have finished","had finished","finished","were finishing"],a:1},
+{q:"Hardly had we started ____ the power went out.",o:["than","then","when","that"],a:2}];
+let TS=null;
+function startTest(){TS={i:0,sc:0,ans:null,done:false};R()}
+function tAns(j){if(TS.ans!=null)return;TS.ans=j;if(j==TQ[TS.i].a)TS.sc++;R()}
+function tNext(){TS.i++;TS.ans=null;if(TS.i>=TQ.length)TS.done=true;R()}
+const lvFrom=c=>c<=1?"A1":c==2?"A2":c==3?"B1":"B2";
+function applyLevel(f){const g=S.goal;g.f=f;if(LV.indexOf(g.t)<=LV.indexOf(f))g.t=LV.indexOf(f)<=3?"C1":"C2";if(!S.ob){const d=day0(new Date());S.start=key(d);START=d;sel=d;S.ob=true}save();calc();TS=null;tab="hoy";calM=0;R()}
+function testView(){const t=TS;
+ if(t.done){const lv=lvFrom(t.sc);return `<div class="card" style="text-align:center"><div style="font-size:3rem">🎓</div><h2>Tu nivel estimado: ${lv}</h2><p>Acertaste ${t.sc} de ${TQ.length}. Es una estimación rápida, no un examen oficial.</p><button class="btn" onclick="applyLevel('${lv}')">Ajustar mi plan y empezar 🌸</button><div style="height:8px"></div><button class="btn alt" onclick="startTest()">Repetir el test</button></div>`}
+ const e=TQ[t.i];
+ return `<div class="card"><div class="bar"><i style="width:${Math.round(t.i/TQ.length*100)}%"></i></div><div class="mut">Pregunta ${t.i+1} de ${TQ.length}</div><h2>${q(e.q)} <button class="chip" data-s="${q(tts(e.q))}" onclick="say(this.dataset.s)">🔊</button></h2>`+e.o.map((o,j)=>`<button class="opt ${t.ans!=null?(j==e.a?"ok":j==t.ans?"bad":""):""}" onclick="tAns(${j})">${o}</button>`).join("")+(t.ans!=null?`<button class="btn" onclick="tNext()">${t.i+1>=TQ.length?"Ver mi nivel":"Siguiente"}</button>`:"")+(S.ob?`<button class="chip" onclick="TS=null;R()">Cancelar</button>`:"")+`</div>`}
+let AI={p:"none",k:"",m:""};const aiK=()=>"ket_ai_"+(USER?USER.email:"");const loadAI=()=>{AI=Object.assign({p:"none",k:"",m:""},LS.get(aiK())||{})};const saveAI=()=>LS.set(aiK(),AI);
+const SYS=()=>"You are a friendly English tutor for "+(USER?USER.name:"a learner")+", a Spanish-speaking student of "+FIELDS[S.field].n+". Their CEFR level is "+S.goal.f+" and their goal is "+S.goal.t+". Reply mainly in simple English adapted to that level, add short Spanish glosses for key technical terms, correct mistakes kindly, keep replies under 120 words and end with one short practice question.";
+function hist(){const o=[];CH.m.slice(1).slice(-12).forEach(m=>{const r=m.r=="u"?"user":"assistant";if(o.length&&o[o.length-1].role==r)o[o.length-1].content+="\n"+m.en;else o.push({role:r,content:m.en})});while(o.length&&o[0].role!="user")o.shift();return o}
+async function askAI(msgs){
+ if(AI.p=="anthropic"){const r=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":AI.k,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},body:JSON.stringify({model:AI.m||"claude-sonnet-5-5",max_tokens:400,system:SYS(),messages:msgs})});const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);return d.content.filter(c=>c.type=="text").map(c=>c.text).join("\n")}
+ const r=await fetch("https://api.openai.com/v1/chat/completions",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+AI.k},body:JSON.stringify({model:AI.m||"gpt-4o-mini",max_tokens:400,messages:[{role:"system",content:SYS()}].concat(msgs)})});const d=await r.json();if(!r.ok)throw new Error(d.error&&d.error.message||r.status);return d.choices[0].message.content}
+function aiSave(){AI.p=$("#ap").value;AI.k=$("#ak").value.trim();AI.m=$("#am").value.trim();if(!AI.k)AI.p="none";if(AI.p=="none")AI.k="";saveAI();R()}
+function aiClear(){AI={p:"none",k:"",m:""};try{localStorage.removeItem(aiK())}catch(e){}R()}
+function aiCard(){return `<div class="card"><h2>🔑 Tutor con IA real <span class="tag">opcional</span></h2>
+<p class="mut">🔒 Tu clave se guarda <b>solo en el localStorage de tu navegador</b>, en este dispositivo. Esta página no tiene servidor: la clave únicamente se envía al proveedor que elijas (Anthropic u OpenAI) cuando chateas en el Tutor. Aun así, cualquiera que use tu navegador, o una página de tu mismo dominio (por ejemplo otros repos de tu usuario.github.io), podría leerla. No la uses en equipos compartidos y crea una clave con límite de gasto. Sin clave, el tutor sigue en modo local.</p>
+<label>Proveedor <select id="ap"><option value="none" ${AI.p=="none"?"selected":""}>Ninguno (modo local)</option><option value="anthropic" ${AI.p=="anthropic"?"selected":""}>Anthropic (Claude)</option><option value="openai" ${AI.p=="openai"?"selected":""}>OpenAI</option></select></label>
+<div style="margin-top:8px"><input id="ak" type="password" autocomplete="off" placeholder="Pega tu API key" value="${q(AI.k)}" style="width:100%"></div>
+<div style="margin-top:8px"><input id="am" type="text" placeholder="Modelo (opcional; por defecto claude-sonnet-5-5 o gpt-4o-mini)" value="${q(AI.m)}" style="width:100%"></div>
+<div style="display:flex;gap:8px;margin-top:10px"><button class="btn" onclick="aiSave()">Guardar</button><button class="btn alt" onclick="aiClear()">Borrar clave</button></div>
+<div class="mut" style="margin-top:6px">${AI.k?"✅ Clave guardada en este navegador. Ya puedes chatear en 🤖 Tutor.":"Sin clave: el tutor funciona en modo local."}</div></div>`}
+/* ===== Cuentas, nube (Supabase), enfoques, ruta y perfil ===== */
+/* ====== CREDENCIALES DE SUPABASE (Project Settings → API Keys) ====== */
+const SUPABASE_URL="https://fwpeockimtbhmqzpcgzy.supabase.co"; /* verifica que coincida con tu Project URL */
+const SUPABASE_ANON_KEY="PEGA_AQUÍ_TU_PUBLISHABLE_KEY"; /* clave publicable (sb_publishable_...) o anon; NUNCA la secreta */
+/* =================================================================== */
+const cfgOk=()=>!!SUPABASE_URL&&!!SUPABASE_ANON_KEY&&!/PEGA/.test(SUPABASE_ANON_KEY);
+const cloud=()=>cfgOk()&&!!window.supabase;
+let SB=null;const sbc=()=>SB||(SB=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY));
+const cuser=u=>({mode:"cloud",email:u.email,name:(u.user_metadata&&u.user_metadata.name)||u.email.split("@")[0],uid:u.id});
+const trErr=m=>({"Invalid login credentials":"Correo o contraseña incorrectos.","User already registered":"Ese correo ya está registrado.","Email not confirmed":"Confirma tu correo antes de iniciar sesión."})[m]||m;
+let SYNCED={};
+const LS={get:k=>{try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let SY="✅ Guardado",_t,AU={mode:"login",msg:""};
+function persist(){if(!USER)return;if(USER.mode=="local")LS.set("ket_u_"+USER.email,S);else{SY="⏳ Guardando…";clearTimeout(_t);_t=setTimeout(cloudSave,800)}}
+const hx=b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("");
+async function pbk(p,salt){const k=await crypto.subtle.importKey("raw",new TextEncoder().encode(p),"PBKDF2",false,["deriveBits"]);return hx(await crypto.subtle.deriveBits({name:"PBKDF2",salt:new TextEncoder().encode(salt),iterations:100000,hash:"SHA-256"},k,256))}
+async function loadCloud(uid){const p=await sbc().from("profiles").select("*").eq("id",uid).maybeSingle(),d=await sbc().from("daily_progress").select("day,minutes,goal_met,xp").eq("user_id",uid);if(p.error)throw p.error;if(d.error)throw d.error;if(!p.data)return null;
+ const r=p.data,st=r.settings||{},log={};SYNCED={};(d.data||[]).forEach(x=>{log[x.day]={min:x.minutes,g:x.goal_met,xp:x.xp};SYNCED[x.day]=JSON.stringify(log[x.day])});
+ return Object.assign({},st,{log,xp:r.xp,hearts:r.hearts,hAt:r.hearts_at?new Date(r.hearts_at).getTime():0,field:r.field,start:r.start_date||undefined,goal:{f:r.level||"A1",t:r.goal_level||"C1",h:st.goalH==null?3:st.goalH,pat:!!st.pat}})}
+async function cloudSave(){const u=USER;if(!u||u.mode!="cloud")return;try{
+ const row={id:u.uid,name:u.name,field:S.field,level:S.goal.f,goal_level:S.goal.t,streak:streak(),xp:S.xp,hearts:S.hearts,hearts_at:S.hAt?new Date(S.hAt).toISOString():null,start_date:S.start||null,settings:{th:S.th,auto:S.auto,ob:S.ob,goalH:S.goal.h,pat:S.goal.pat,plan:S.plan,pc:S.pc||0},updated_at:new Date().toISOString()};
+ const days=Object.keys(S.log).filter(k=>SYNCED[k]!==JSON.stringify(S.log[k])).map(k=>({user_id:u.uid,day:k,minutes:S.log[k].min,goal_met:!!S.log[k].g,xp:S.log[k].xp||0}));
+ let r=await sbc().from("profiles").upsert(row);if(r.error)throw r.error;
+ if(days.length){r=await sbc().from("daily_progress").upsert(days,{onConflict:"user_id,day"});if(r.error)throw r.error;days.forEach(x=>{SYNCED[x.day]=JSON.stringify(S.log[x.day])})}
+ SY="✅ Guardado en la nube"}catch(x){SY="⚠️ "+trErr(x.message)}
+ const e=$("#sy");if(e)e.textContent=SY}
+async function cloudAuth(e,p,n){
+ if(AU.mode=="signup"){const r=await sbc().auth.signUp({email:e,password:p,options:{data:{name:n}}});if(r.error)throw r.error;if(!r.data.session){AU.msg="Cuenta creada. Revisa tu correo para confirmarla y luego inicia sesión.";AU.mode="login";return null}const u=cuser(r.data.user);u.name=n;return{user:u,data:null}}
+ const r=await sbc().auth.signInWithPassword({email:e,password:p});if(r.error)throw r.error;const u=cuser(r.data.user);return{user:u,data:await loadCloud(u.uid)}}
+async function localAuth(e,p,n){const us=LS.get("ket_users")||{};
+ if(AU.mode=="signup"){if(us[e])throw new Error("Ese correo ya está registrado.");const first=!Object.keys(us).length,salt=hx(crypto.getRandomValues(new Uint8Array(12)));us[e]={salt,hash:await pbk(p,salt),name:n};LS.set("ket_users",us);let d=null;if(first){d=LS.get("ket");if(d&&!d.start&&Object.keys(d.log||{}).length)d.start="2026-11-13"}return{user:{mode:"local",email:e,name:n},data:d}}
+ const u=us[e];if(!u||u.hash!==await pbk(p,u.salt))throw new Error("Correo o contraseña incorrectos.");return{user:{mode:"local",email:e,name:u.name},data:LS.get("ket_u_"+e)}}
+async function doAuth(){const su=AU.mode=="signup",e=$("#au-e").value.trim().toLowerCase(),p=$("#au-p").value,n=su?$("#au-n").value.trim():"";
+ if(!/^\S+@\S+\.\S+$/.test(e)){AU.msg="Escribe un correo válido.";return R()}
+ if(p.length<6){AU.msg="La contraseña debe tener al menos 6 caracteres.";return R()}
+ if(su&&!n){AU.msg="Escribe tu nombre.";return R()}
+ try{const r=cloud()?await cloudAuth(e,p,n):await localAuth(e,p,n);if(r){USER=r.user;if(USER.mode=="local")LS.set("ket_sess",USER);hydrate(r.data);AU.msg=""}}catch(x){AU.msg=trErr(x.message)}R()}
+async function logout(){if(USER&&USER.mode=="cloud"){clearTimeout(_t);await cloudSave();try{await sbc().auth.signOut()}catch(e){}}USER=null;LS.set("ket_sess",null);hydrate(null);AU.mode="login";R()}
+function authView(){if(LOAD)return `<div class="card" style="text-align:center;margin-top:30px"><div style="font-size:3rem">🌸</div><h2>Cargando tu progreso…</h2></div>`;const su=AU.mode=="signup";
+ return `<div class="card" style="margin-top:20px;background:linear-gradient(160deg,var(--p1),var(--lav))"><div style="text-align:center"><div style="font-size:3.2rem">🌸</div><h1>Cloudy English</h1><p class="mut">Inicia sesión para guardar tu racha, XP y vidas.</p></div>
+<div style="display:flex;gap:6px;margin:10px 0"><button class="chip ${!su?"on":""}" onclick="AU.mode='login';AU.msg='';R()">Iniciar sesión</button><button class="chip ${su?"on":""}" onclick="AU.mode='signup';AU.msg='';R()">Registrarme</button></div>
+${su?'<input id="au-n" type="text" placeholder="Tu nombre" autocomplete="name" style="width:100%;margin-bottom:8px">':""}
+<input id="au-e" type="text" inputmode="email" placeholder="Correo electrónico" autocomplete="email" style="width:100%;margin-bottom:8px">
+<input id="au-p" type="password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="${su?"new-password":"current-password"}" style="width:100%;margin-bottom:10px">
+<button class="btn" onclick="doAuth()">${su?"Crear mi cuenta 🌸":"Entrar 🌸"}</button>
+${AU.msg?`<p style="color:var(--coral);font-weight:800">${q(AU.msg)}</p>`:""}
+<div class="mut" style="margin-top:10px">${cloud()?"☁️ Tu cuenta y tu progreso se guardan en la nube con Supabase.":cfgOk()?"⚠️ No se pudo cargar supabase-js (revisa tu conexión). Mientras tanto usas el modo local.":"💾 Modo local simulado. Pega tu SUPABASE_URL y SUPABASE_ANON_KEY en el archivo para activar las cuentas en la nube."}</div><div class="mut" style="margin-top:8px">🎨 ${swHtml()}</div></div>`}
+/* enfoques */
+const pm=s=>{const p=s.split(";");return{n:p[0],e:p[1],t:p.slice(2,8),c:p.slice(8,11)}};
+const bx=d=>[{t:"mc",q:d.m1[0],o:d.m1[1],a:d.m1[2],x:d.m1[3],k:d.k[0]},{t:"match",q:"Empareja el vocabulario",p:d.mt,ord:[2,0,3,1],k:d.k[1]},{t:"mc",q:d.m2[0],o:d.m2[1],a:d.m2[2],x:d.m2[3],k:d.k[2]},{t:"fill",q:d.fl[0],o:d.fl[1],a:d.fl[2],x:d.fl[3],k:d.k[3]},{t:"speak",q:"Pronunciation",s:d.sp,a:0,k:d.k[4]},{t:"cards",q:"Repaso rápido estilo Anki",c:d.cd,k:d.k[4]}];
+const mkF=(n,e,d0,mods,dk,kb,sh,fb,ln)=>({n,e,d:d0,mods:mods.map(pm),ex:bx(dk),voc:dk.mt.concat(dk.cd).map(p=>[p[0].toLowerCase(),p[1]]),kb:kb.map(x=>[new RegExp(x[0]),x[1],x[2]]),sh,fb,ln});
+const FIELDS={
+ing:{n:"Ingeniería",e:"⚙️",d:"Software, circuitos, hardware, Linux y código",mods:MONTHS,ex:EX,voc:VOC,kb:KB,sh:SH,fb:"The function returns a value to the main program.",ln:"Hardware y circuitos"},
+med:mkF("Medicina y Salud","🩺","Anatomía, clínica, farmacología y pacientes",[
+"Anatomía y cuerpo humano;🫀;Body systems|Sistemas del cuerpo;Organs & locations|Órganos y ubicaciones;Bones & muscles|Huesos y músculos;Heart & circulation|Corazón y circulación;Lungs & breathing|Pulmones y respiración;Brain & nerves|Cerebro y nervios;Nombra 10 órganos en inglés y di dónde están;Describe tu sistema favorito del cuerpo en 5 frases;Etiqueta un diagrama anatómico en inglés",
+"Pacientes y síntomas;🤒;Greeting a patient|Saludar al paciente;Taking a medical history|Historia clínica;Describing symptoms|Describir síntomas;Pain scales|Escalas de dolor;Vital signs|Signos vitales;Explaining a diagnosis|Explicar un diagnóstico;Simula una anamnesis de 6 preguntas;Describe 3 síntomas de una gripe;Explica la presión arterial a un paciente",
+"Farmacología;💊;Medication names & forms|Nombres y formas de medicamentos;Dosage & frequency|Dosis y frecuencia;Side effects|Efectos secundarios;Allergies & interactions|Alergias e interacciones;Prescriptions|Recetas;Giving instructions|Dar instrucciones;Escribe una receta simulada en inglés;Explica 3 efectos secundarios de un analgésico;Di una dosis con su frecuencia",
+"Clínica y urgencias;🏥;Triage & emergencies|Triaje y urgencias;Examinations & tests|Exámenes y pruebas;Lab results|Resultados de laboratorio;Procedures & surgery|Procedimientos y cirugía;Handover (SBAR)|Entrega de turno (SBAR);Infection control|Control de infecciones;Haz un SBAR de 1 minuto sobre un caso simulado;Explica una prueba de laboratorio al paciente;Describe un procedimiento paso a paso",
+"Medicina avanzada;🎓;Case presentations|Presentación de casos;Reading research papers|Leer artículos científicos;Ethics & consent|Ética y consentimiento;Breaking bad news|Dar malas noticias;Medical conferences|Congresos médicos;Interviews & residency|Entrevistas y residencia;Presenta un caso clínico en 2 minutos;Resume el abstract de un artículo;Practica dar una mala noticia con empatía"],
+{m1:["The doctor listens to your heart with a ____.",["stethoscope","thermometer","syringe","scalpel"],0,"El estetoscopio sirve para escuchar corazón y pulmones."],mt:[["Heart","Corazón"],["Lung","Pulmón"],["Blood pressure","Presión arterial"],["Symptom","Síntoma"]],m2:["Choose the correct sentence.",["I has a headache since yesterday.","I have had a headache since yesterday.","I am have headache from yesterday.","I had a headache since yesterday now."],1,"Con since usamos present perfect: have had."],fl:["Take two tablets ____ a day after meals.",["twice","two","second","double"],0,"Twice a day = dos veces al día."],sp:"Please describe your symptoms to the doctor.",cd:[["fever","fiebre"],["dosage","dosis"],["side effect","efecto secundario"],["allergy","alergia"],["prescription","receta médica"]],k:["stethoscope","blood pressure","headache","twice","symptoms"]},
+[["heart|blood|pressure|pulse","Blood pressure shows how strongly blood pushes against your arteries. Normal is around 120 over 80.","La presión arterial mide la fuerza de la sangre; lo normal es cerca de 120/80."],["symptom|pain|fever|headache","To describe pain, say where it hurts, how strong it is and how long it has lasted: “I have a sharp pain in my chest since this morning.”","Para describir dolor: dónde, intensidad y duración."],["dose|dosage|tablet|medic|drug|prescri","Dosage tells you how much to take and how often, for example “one tablet twice a day after meals”.","La dosis dice cuánto y cada cuánto tomar."],["patient|doctor|nurse|hospital|triage","With patients, be clear and kind: greet them, ask open questions and check that they understand.","Con pacientes: saluda, pregunta abierto y confirma que entienden."]],
+["Please tell me where it hurts.","Take one tablet twice a day after meals.","Your blood pressure is normal today."],"The patient has a fever and a sore throat.","Anatomía y clínica"),
+moda:mkF("Moda y Confección","👗","Textiles, patronaje, diseño y pasarela",[
+"Textiles y materiales;🧵;Fabrics & fibres|Telas y fibras;Textures & finishes|Texturas y acabados;Colors & patterns|Colores y estampados;Sewing tools|Herramientas de costura;Care labels|Etiquetas de cuidado;Sustainable materials|Materiales sostenibles;Describe 5 telas con adjetivos en inglés;Lee una etiqueta de cuidado y explícala;Describe tu tela favorita en 5 frases",
+"Patronaje y confección;✂️;Measurements & sizing|Medidas y tallas;Pattern making|Patronaje;Cutting & stitching|Corte y costura;Seams & hems|Costuras y dobladillos;Fitting & alterations|Pruebas y arreglos;Garment parts|Partes de una prenda;Explica cómo tomar medidas a un cliente;Describe los pasos para coser una falda;Nombra 10 partes de una prenda",
+"Diseño y tendencias;🎨;Silhouettes & styles|Siluetas y estilos;Trends & seasons|Tendencias y temporadas;Mood boards|Moodboards;Sketching & tech packs|Bocetos y fichas técnicas;Color palettes|Paletas de color;Fashion history|Historia de la moda;Describe un outfit con 5 frases;Presenta un moodboard en 1 minuto;Explica una tendencia actual en inglés",
+"Pasarela y marca;👠;Fashion shows|Desfiles de moda;Backstage vocabulary|Vocabulario de backstage;Photoshoots & styling|Sesiones de fotos y estilismo;Branding & social media|Marca y redes sociales;Collections & lookbooks|Colecciones y lookbooks;Press & PR|Prensa y relaciones públicas;Narra un desfile como presentadora;Escribe un caption para una publicación de moda;Presenta tu colección en 2 minutos",
+"Negocio de la moda;💼;Selling to clients|Vender a clientes;Suppliers & orders|Proveedores y pedidos;Pricing & margins|Precios y márgenes;Retail & e-commerce|Retail y comercio electrónico;Trade fairs|Ferias comerciales;Interviews & portfolio|Entrevistas y portafolio;Haz un pitch de venta de una prenda;Negocia un pedido con un proveedor;Presenta tu portafolio en inglés"],
+{m1:["A soft, lightweight fabric like silk is perfect for a ____.",["blouse","tent","carpet","backpack strap"],0,"La seda es suave y ligera: ideal para una blusa."],mt:[["Fabric","Tela"],["Seam","Costura"],["Hem","Dobladillo"],["Pattern","Patrón / molde"]],m2:["Choose the correct sentence.",["The dress fit me perfect.","The dress fits me perfectly.","The dress fitting me perfect.","The dress is fit perfectly me."],1,"Usamos el adverbio perfectly para modificar al verbo fits."],fl:["Use a ____ to measure the waist of the client.",["tape measure","thimble","zipper","button"],0,"Tape measure = cinta métrica."],sp:"I need to sew the hem of this skirt.",cd:[["thread","hilo"],["needle","aguja"],["sleeve","manga"],["collar","cuello"],["runway","pasarela"]],k:["fabric","seam","fits","tape measure","hem"]},
+[["fabric|cotton|silk|wool|linen|textile","Cotton is breathable, silk is smooth and light, wool is warm, and linen is cool but wrinkles easily.","Algodón transpirable, seda suave, lana abrigada, lino fresco pero se arruga."],["seam|hem|stitch|sew|thread|needle","A seam joins two pieces of fabric, and a hem is the folded edge at the bottom of a garment.","La costura une telas y el dobladillo es el borde doblado."],["pattern|measure|size|fit|waist|bust","Take measurements of the bust, waist and hips, then draft the pattern and add seam allowance.","Toma busto, cintura y cadera; traza el patrón y suma margen de costura."],["runway|collection|trend|model|show|design","On the runway, a collection is presented in a fashion show; designers follow trends and seasons.","En la pasarela se presenta una colección; se siguen tendencias y temporadas."]],
+["This fabric is soft and lightweight.","I need to sew the hem of this skirt.","The new collection will be on the runway."],"This collection uses sustainable cotton and bright colors.","Textiles y patronaje"),
+neg:mkF("General / Negocios","💼","Conversación general, oficina y entrevistas",[
+"Conversación diaria;💬;Introductions & small talk|Presentaciones y charla;Daily routines|Rutinas diarias;Asking & giving directions|Pedir y dar direcciones;Shopping & restaurants|Compras y restaurantes;Travel & transport|Viajes y transporte;Making plans|Hacer planes;Preséntate en 1 minuto;Pide algo en un restaurante simulado;Cuenta tu rutina en 6 frases",
+"Oficina y correo;🏢;Office vocabulary|Vocabulario de oficina;Writing emails|Escribir correos;Phone calls|Llamadas telefónicas;Scheduling meetings|Agendar reuniones;Giving updates|Dar actualizaciones;Teamwork|Trabajo en equipo;Redacta un correo pidiendo una reunión;Simula una llamada de 1 minuto;Escribe un reporte de avance en 5 líneas",
+"Reuniones y presentaciones;📊;Running a meeting|Dirigir una reunión;Opinions & agreeing|Opiniones y acuerdos;Presenting data|Presentar datos;Q&A and objections|Preguntas y objeciones;Negotiation basics|Negociación básica;Follow-ups|Seguimiento;Presenta un gráfico en 1 minuto;Da una opinión con 3 conectores;Responde una objeción con calma",
+"Ventas y clientes;🤝;Customer service|Atención al cliente;Selling a product|Vender un producto;Complaints|Reclamos;Contracts & prices|Contratos y precios;Networking events|Eventos de networking;Marketing basics|Marketing básico;Haz un pitch de ventas de 1 minuto;Responde un reclamo de forma profesional;Preséntate en un evento de networking",
+"Entrevistas y liderazgo;🎓;Common interview questions|Preguntas comunes de entrevista;STAR answers|Respuestas STAR;CV & LinkedIn|CV y LinkedIn;Salary & benefits|Salario y beneficios;Leading a team|Liderar un equipo;Strategy & trends|Estrategia y tendencias;Responde 3 preguntas de entrevista;Escribe tu resumen de LinkedIn;Haz una presentación de liderazgo de 2 minutos"],
+{m1:["Nice to meet you. I ____ from Colombia.",["am","is","are","be"],0,"Con I usamos am."],mt:[["Meeting","Reunión"],["Deadline","Fecha límite"],["Invoice","Factura"],["Colleague","Colega"]],m2:["Choose the correct sentence.",["I look forward to hear from you.","I look forward to hearing from you.","I look forward hear from you.","I looking forward to hearing you."],1,"Look forward to + verbo en -ing."],fl:["Could you send me the report by the ____?",["deadline","kitchen","weather","luggage"],0,"Deadline = fecha límite."],sp:"Let’s schedule a meeting for next Monday.",cd:[["schedule","agenda / programar"],["budget","presupuesto"],["client","cliente"],["negotiate","negociar"],["interview","entrevista"]],k:["meeting","deadline","hearing","deadline","meeting"]},
+[["meeting|agenda|schedule","Start a meeting with the agenda: “Thanks for joining. Today we will review three points.”","Empieza con la agenda: “Thanks for joining…”."],["email|mail|write|letter","In a formal email, use a clear subject, a polite greeting and a short closing like “Best regards”.","Correo formal: asunto claro, saludo cortés y cierre breve."],["interview|cv|resume|job|star","For interview answers use STAR: Situation, Task, Action, Result.","STAR: Situación, Tarea, Acción, Resultado."],["client|sell|price|negotiat|contract","When negotiating, listen first, state your needs clearly and look for a win-win deal.","Negocia escuchando, expón tus necesidades y busca ganar-ganar."]],
+["Let’s schedule a meeting for next Monday.","I look forward to hearing from you.","Could you send me the report by Friday?"],"I will send you the report before the meeting.","Oficina y reuniones")};
+function applyField(){const f=FIELDS[S.field]||FIELDS.ing;MONTHS=f.mods;EX=f.ex;VOC=f.voc;KB=f.kb;SH=f.sh;ANKI=EX.find(e=>e.t=="cards").c}
+function setField(k){S.field=k;applyField();save();R()}
+function fieldView(){return `<div class="card" style="text-align:center;margin-top:20px"><h2>🎯 Elige tu enfoque de inglés</h2><p class="mut">Las tarjetas, el vocabulario y los retos se adaptan a tu campo. Podrás cambiarlo en ⚙️ Meta.</p>${Object.entries(FIELDS).map(([k,f])=>`<button class="opt" onclick="setField('${k}')"><b>${f.e} ${f.n}</b><br><span class="mut">${f.d}</span></button>`).join("")}</div>`}
+/* vidas persistentes */
+function lose(){S.hearts=Math.max(L.h,0);if(S.hearts==5)S.hAt=Date.now();save()}
+function refill(){if(S.hearts<6&&S.hAt){const n=Math.floor((Date.now()-S.hAt)/18e5);if(n>0){S.hearts=Math.min(6,S.hearts+n);S.hAt=S.hearts<6?S.hAt+n*18e5:0}}}
+/* ruta y perfil */
+const XPT=[0,100,250,450,700];
+function ruta(){const r=Math.min(4,Math.max(LV.indexOf(S.goal.f),XPT.filter(x=>S.xp>=x).length-1,0)),nx=XPT[r+1];
+ return `<div class="card"><h2>🗺️ Tu ruta de aprendizaje</h2><div class="mut">Gana XP en las lecciones para desbloquear el siguiente nivel.${nx?` Te faltan <b>${Math.max(0,nx-S.xp)} XP</b> para ${LV[r+1]}.`:" ¡Llegaste al último nodo!"}</div><div style="display:flex;flex-direction:column;gap:14px;margin-top:16px">${LV.slice(0,5).map((l,i)=>{const st=i<r?"done":i==r?"cur":"lock";return `<div style="display:flex;justify-content:${["flex-start","center","flex-end","center","flex-start"][i]};padding:0 12%"><button class="node ${st}" ${st=="lock"?"disabled":""} onclick="startL()">${st=="done"?"✓":st=="lock"?"🔒":"⭐"}<b>${l}</b><span>${XPT[i]} XP</span></button></div>`}).join("")}</div></div>`}
+function perfil(){const f=FIELDS[S.field];
+ return `<div class="card" style="text-align:center"><div style="font-size:3rem">🧑‍🎓</div><h2>${q(USER.name)}</h2><div class="mut">${q(USER.email)}</div><span class="tag">${f.e} ${f.n}</span> <span class="tag">${S.goal.f} → ${S.goal.t}</span></div>
+<div class="card"><div class="row"><span>🔥 Racha actual</span><b>${streak()} día${streak()==1?"":"s"}</b></div><div class="row"><span>⭐ XP acumulados</span><b>${S.xp}</b></div><div class="row"><span>${HT[S.th]} Vidas restantes</span><b>${S.hearts} / 6</b></div><div class="mut">Las vidas se guardan en tu cuenta; recuperas 1 cada 30 min o al completar un reto de castigo.</div>
+<div class="row"><span>${USER.mode=="cloud"?"☁️ Nube":"💾 Local (simulado)"}</span><b id="sy">${USER.mode=="cloud"?SY:"✅ Guardado"}</b></div><div style="margin:10px 0"><div class="mut">Mi especialidad</div>${Object.entries(FIELDS).map(([k,f])=>`<button class="chip ${S.field==k?"on":""}" onclick="setField('${k}')">${f.e} ${f.n}</button>`).join("")}</div><button class="btn alt" onclick="logout()">Cerrar sesión</button></div>`}
+function R(){
+ if(USER&&S.ob&&S.field&&S.hearts<=0&&!L)L={i:0,h:0,ok:0,xp:0,ans:null,m:[],s:null,ci:0,fl:false,miss:[],pun:null,tr:""};
+ if(L&&L.h<=0)tab="leccion";
+ document.documentElement.dataset.th=S.th;
+ const gate=!USER||LOAD||!S.field||!S.ob;$(".top").style.display=gate?"none":"";
+ if(gate){$("#nv").innerHTML="";$("#v").innerHTML=(!USER||LOAD)?authView():!S.field?fieldView():TS?testView():welcome();return}
+ const dd=Object.keys(S.log).length,lvl=Math.floor(S.xp/100)+1,lk=L&&L.h<=0;
+ $("#hi").textContent="¡Hola, "+USER.name+"! "+FIELDS[S.field].e+" "+FIELDS[S.field].n+" · inglés especializado";
+ $("#st").innerHTML=`<span class="stat">🔥 Racha: ${streak()} día${streak()==1?"":"s"}</span><span class="stat">⭐ ${S.xp} XP</span><span class="stat">${HT[S.th]} ${S.hearts}/6</span><span class="stat">🎀 Nivel ${lvl}</span><span class="stat">🎯 ${S.goal.f} → ${S.goal.t}</span>`;
+ $("#sw").innerHTML="🎨 Tema: "+TH.map(t=>`<button class="sw ${S.th==t.k?"on":""}" style="background:${t.c}" title="${t.n}" aria-label="${t.n}" onclick="setTh('${t.k}')"></button>`).join("");
+ $("#pb").style.width=Math.min(100,Math.round(dd/TOTAL*100))+"%";
+ $("#pt").textContent=`Tu plan: ${dd} de ${TOTAL} días completados · ${START.getDate()} ${MN[START.getMonth()].slice(0,3)} ${START.getFullYear()} → ${END.getDate()} ${MN[END.getMonth()].slice(0,3)} ${END.getFullYear()}`;
+ $("#nv").innerHTML=[["hoy","🏠 Hoy"],["ruta","🗺️ Ruta"],["leccion","🎮 Lección"],["tutor","🤖 Tutor"],["cal","🗓️ Calendario"],["plan","📚 Plan"],["perfil","👤 Perfil"],["meta","⚙️ Meta"]].map(([k,t])=>`<button class="${tab==k?"on":""}" ${lk?"disabled":""} onclick="tab='${k}';R()">${t}</button>`).join("");
+ $("#v").innerHTML=TS?testView():({hoy,ruta,leccion:lesson,tutor,cal,plan,perfil,meta})[tab]();
+}
+hydrate(null);
+(async function(){
+ if(cloud()){LOAD=true;R();try{const g=await sbc().auth.getSession(),se=g.data&&g.data.session;if(se){USER=cuser(se.user);hydrate(await loadCloud(USER.uid))}}catch(e){USER=null}LOAD=false;R();return}
+ const ss=LS.get("ket_sess");if(ss&&ss.email&&ss.mode=="local"){USER=ss;hydrate(LS.get("ket_u_"+ss.email))}R()})();
+</script></body></html>
